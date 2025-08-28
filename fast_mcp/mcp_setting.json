@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "My MCP": {
+        "transport": "stdio",
+        "command": "uv",
+        "args": [
+            "run",
+            "server.py"
+        ]
+    }
+  }
+}
