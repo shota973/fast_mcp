@@ -6,7 +6,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-  model="deepseek-r1",
+  model="qwen3:32b",
   messages=[
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": "Who won the world series in 2020?"},
