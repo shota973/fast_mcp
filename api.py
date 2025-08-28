@@ -1,6 +1,7 @@
 import requests
 import re
 import sys
+import model
 
 API_SERVER_URL = "http://localhost:11434/api/generate"
 
@@ -17,7 +18,7 @@ def main():
     args = sys.argv
     headers = {"Content-Type": "application/json"}
     json = {
-        "model": "deepseek-r1:70b",
+        "model": model.CHAT_MODEL,
         "prompt": """
             # 設定
             あなたは以下に与えられた問題を解く手法を提案するaiエージェントです。

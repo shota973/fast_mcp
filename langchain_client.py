@@ -6,16 +6,16 @@ import asyncio
 from langchain_ollama import ChatOllama
 import json
 from langgraph.prebuilt import create_react_agent
+import model
 
 llm = ChatOllama(
-    model = "gpt-oss",
+    model = model.CHAT_MODEL,
     temperature = 0,
     base_url = "http://localhost:11434"
 )
 
-CONFIG_PATH = "mcp_setting.json"
 
-def load_json_config(path=CONFIG_PATH):
+def load_json_config(path=model.CONFIG_PATH):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 mcp_setting_config = load_json_config().get("mcpServers", {})
