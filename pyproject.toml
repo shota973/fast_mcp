@@ -5,8 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastmcp>=2.10.5",
-    "openai>=1.95.1",
+    "langchain-mcp-adapters>=0.1.9",
+    "langchain-mcp>=0.2.1",
+    "langchain-ollama>=0.3.7",
+    "langchain>=0.3.27",
+    "langgraph>=0.6.6",
+    "mcp>=1.11.0",
 ]
 
 [tool.uv.workspace]
