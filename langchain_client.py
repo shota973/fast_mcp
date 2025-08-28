@@ -8,27 +8,21 @@ import json
 from langgraph.prebuilt import create_react_agent
 import model
 
-llm = ChatOllama(
-    model = model.CHAT_MODEL,
-    temperature = 0,
-    base_url = "http://localhost:11434"
-)
-
-
 def load_json_config(path=model.CONFIG_PATH):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
 mcp_setting_config = load_json_config().get("mcpServers", {})
 print(mcp_setting_config)
 
-
-def print_messages(result):
-    messages = result.get("messages", result)  # result["messages"] or result itself if already a list
+def print_messages(result) -> list[list[str]]:
+    messages = result.get("messages", result)
     if not isinstance(messages, list):
         print("messagesがリストではありません")
-        return
+        return [["error", ""]]
+    results = []
     for msg in messages:
-        # クラス名またはtype属性で判定
+        message = ""
         msg_type = msg.get("type") if isinstance(msg, dict) else type(msg).__name__
         if not msg_type and hasattr(msg, "__class__"):
             msg_type = msg.__class__.__name__
@@ -36,33 +30,38 @@ def print_messages(result):
         if isinstance(msg, dict):
             for k, v in msg.items():
                 print(f"{k}: {v}")
+                message += f"{k}: {v}\n"
         else:
             print(msg)
-            
-async def main():
-    # クライアント生成（context manager を使わない）
+            message += str(msg) + "\n"
+        results.append([msg_type, message])
+    return results
+
+async def create_client():
+    llm = ChatOllama(
+        model = model.CHAT_MODEL,
+        temperature = 0,
+        base_url = "http://localhost:11434"
+    )
     client = MultiServerMCPClient(mcp_setting_config)
-
-    # MCPツール取得
     tools = await client.get_tools()
-
     sys_message = SystemMessage(
         content="あなたはMCPサーバーを使用するAIアシスタントです。"
                 "Toolの結果を優先して回答として採用してください"
                 "回答は日本語でお願いします。"
     )
-
-    # エージェント作成
     agent = create_react_agent(llm, tools, prompt=sys_message)
+    return agent
 
-    # クエリ送信
-    result = await agent.ainvoke({"messages": "東京(Tokyo)の天気は？"})
-    print_messages(result)
+async def send_message(agent, message: str) -> list[list[str]]:
+    # ReAct エージェントは messages の履歴形式を期待
+    result = await agent.ainvoke({"messages": [("human", message)]})
+    results = print_messages(result)
+    return results
 
-    # 必要なら明示的クローズ（実装されていれば）
-    close = getattr(client, "close", None)
-    if callable(close):
-        await close()
+async def main():
+    agent = await create_client()
+    await send_message(agent, "東京(Tokyo)の天気は？")
 
 if __name__ == "__main__":
     asyncio.run(main())
