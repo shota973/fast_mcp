@@ -1,12 +1,13 @@
 # 参考　https://qiita.com/mkuwan/items/07a34f30f4926d09017a
+import sys
+import json
+import asyncio
+import model
 
 from langchain_core.messages import SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
-import asyncio
 from langchain_ollama import ChatOllama
-import json
 from langgraph.prebuilt import create_react_agent
-import model
 
 def load_json_config(path=model.CONFIG_PATH):
     with open(path, "r", encoding="utf-8") as f:
@@ -60,8 +61,13 @@ async def send_message(agent, message: str) -> list[list[str]]:
     return results
 
 async def main():
+    prompt = "東京(Tokyo)の天気は？"
+    args = sys.argv
+    if len(args) < 2:
+        prompt = " ".join(args[1:])
+        
     agent = await create_client()
-    await send_message(agent, "東京(Tokyo)の天気は？")
+    await send_message(agent, prompt)
 
 if __name__ == "__main__":
     asyncio.run(main())

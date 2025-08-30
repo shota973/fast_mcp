@@ -2,9 +2,9 @@
 
 import flet as ft
 import time
-import langchain_client
 import model
-from langchain_mcp_adapters.client import MultiServerMCPClient
+import paramiko
+import ssh_config
 
 class Message:
     def __init__(self, user_name: str, text: str, message_type: str):
@@ -61,7 +61,11 @@ class ChatMessage(ft.Row):
 async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "AI Chat"
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+    ssh.connect(ssh_config.host, username=ssh_config.username, password=ssh_config.password)
+    
     # agent = await langchain_client.create_client()
     def send_message_click(e):
         if new_message.value != "":
@@ -80,16 +84,31 @@ async def main(page: ft.Page):
                     message_type="chat_message",
                 )
             )
-            # answers = await langchain_client.send_message(agent, new_message.value)
-            # chat.controls.remove(loading_message)
-            # for answer in answers:
-            #     add_message(
-            #         Message(
-            #             answer[0],
-            #             answer[1],
-            #             message_type="chat_message",
-            #         )
-            #     )
+            stdin, stdout, stderr = ssh.exec_command('cd Desktop/ollama/mcp && uv run langchain_client.py ' + new_message.value)
+            chat.controls.remove(loading_message)
+            add_message(
+                Message(
+                    "stdin",
+                    stdin.read().decode(),
+                    message_type="chat_message",
+                )
+            )
+            if stderr.read().decode():
+                add_message(
+                    Message(
+                        "stderr",
+                        stderr.read().decode(),
+                        message_type="chat_message",
+                    )
+                )
+            else:
+                add_message(
+                    Message(
+                        "stdout",
+                        stdout.read().decode(),
+                        message_type="chat_message",
+                    )
+                )
             new_message.value = ""
             new_message.focus()
             page.update()
