@@ -1,29 +1,12 @@
 {
   "mcpServers": {
-    "filesystem": {
-      "transport": "stdio",
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "--mount", "type=bind,src=/home/hpc/Desktop/ollama/mcp/filesystem_test,dst=/projects/filesystem_test",
-        "mcp/filesystem",
-        "/projects"
-      ]
-    },
-    "fetch": {
-      "command": "uvx",
-      "args": ["mcp-server-fetch"],
-      "transport": "stdio"
-    },
     "My MCP": {
-      "transport": "stdio",
-      "command": "uv",
-      "args": [
-        "run",
-        "server.py"
-      ]
+        "transport": "stdio",
+        "command": "uv",
+        "args": [
+            "run",
+            "server.py"
+        ]
     }
   }
 }

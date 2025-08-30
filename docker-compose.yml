@@ -15,19 +15,6 @@ services:
               count: all
               capabilities: [gpu]
     restart: always
-  uv:
-    build: .
-    tty: true
-    working_dir: /app
-    command: ["tail", "-f", "/dev/null"]
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-          ignore:
-            - .venv/
-        - action: rebuild
-          path: ./uv.lock
+
 volumes:
   ollama_data:

@@ -62,8 +62,8 @@ async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "AI Chat"
 
-    agent = await langchain_client.create_client()
-    async def send_message_click(e):
+    # agent = await langchain_client.create_client()
+    def send_message_click(e):
         if new_message.value != "":
             add_message(
                 Message(
@@ -80,16 +80,16 @@ async def main(page: ft.Page):
                     message_type="chat_message",
                 )
             )
-            answers = await langchain_client.send_message(agent, new_message.value)
-            chat.controls.remove(loading_message)
-            for answer in answers:
-                add_message(
-                    Message(
-                        answer[0],
-                        answer[1],
-                        message_type="chat_message",
-                    )
-                )
+            # answers = await langchain_client.send_message(agent, new_message.value)
+            # chat.controls.remove(loading_message)
+            # for answer in answers:
+            #     add_message(
+            #         Message(
+            #             answer[0],
+            #             answer[1],
+            #             message_type="chat_message",
+            #         )
+            #     )
             new_message.value = ""
             new_message.focus()
             page.update()
@@ -142,3 +142,4 @@ async def main(page: ft.Page):
 
 if __name__ == "__main__":
     ft.app(target=main)
+
